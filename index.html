@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Simple CRUD App</title>
+<script>
+async function fetchItems() {
+  const response = await fetch('/.netlify/functions/get-items');
+  const items = await response.json();
+  const itemsList = document.getElementById('itemsList');
+  itemsList.innerHTML = items.map(item => `<li>${item.name}</li>`).join('');
+}
+
+async function addItem(event) {
+  event.preventDefault();
+  const name = document.getElementById('itemName').value;
+  await fetch('/.netlify/functions/add-item', {
+    method: 'POST',
+    body: JSON.stringify({ name }),
+  });
+  document.getElementById('itemName').value = ''; // clear input
+  fetchItems(); // refresh the list
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  fetchItems();
+});
+</script>
+</head>
+<body>
+<h1>Items List</h1>
+<form onsubmit="addItem(event)">
+    <input type="text" id="itemName" required>
+    <input type="submit" value="Add Item">
+</form>
+<ul id="itemsList"></ul>
+</body>
+</html>
+
